@@ -25,7 +25,7 @@ func SetupRouter(db *gorm.DB) *fiber.App {
 
 	r.Post("/api/v1/product/create", productHandler.CreateProduct)
 	r.Get("/api/v1/product/:id", productHandler.GetProductByID)
-	r.Get("/api/v1/product/get-all", productHandler.GetProducts)
+	r.Get("/api/v1/products", productHandler.GetProducts)
 	r.Put("/api/v1/product/:id", productHandler.UpdateProduct)
 	r.Delete("/api/v1/product/:id", productHandler.DeleteProduct)
 
