@@ -1,9 +1,6 @@
 package helpers
 
-type ProductNotFound struct {
-	Message string
-}
+import "errors"
 
-func (p *ProductNotFound) Error() string {
-	return "product not found"
-}
+var ErrProductNotFound = errors.New("product not found")
+var ErrProductAlreadyExists = errors.New("product already exists")
