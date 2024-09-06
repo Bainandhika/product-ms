@@ -11,6 +11,7 @@ type ProductRepo interface {
 	UpdateProduct(id string, data views.UpdateProductRequest) error
 	DeleteProduct(id string) error
 	GetProductByID(id string) (*views.Product, error)
+	GetProductByName(name string) (*views.Product, error)
 	GetProducts(limit, offset int) ([]views.Product, error)
 }
 
@@ -37,6 +38,15 @@ func (r *productRepo) DeleteProduct(id string) error {
 func (r *productRepo) GetProductByID(id string) (*views.Product, error) {
 	var product views.Product
 	err := r.db.First(&product, id).Error
+	if err != nil {
+		return nil, err
+	}
+	return &product, nil
+}
+
+func (r *productRepo) GetProductByName(name string) (*views.Product, error) {
+	var product views.Product
+	err := r.db.Where("name = ?", name).First(&product).Error
 	if err != nil {
 		return nil, err
 	}
