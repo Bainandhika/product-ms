@@ -1,11 +1,11 @@
 package views
 
 type Status struct {
-	Code    int
-	Message string
+	Code    int    `json:"code"`
+	Message string `json:"message"`
 }
 
 type DefaultResponse struct {
-	Status Status
-	Data   any
+	Status Status `json:"status"`
+	Data   any    `json:"data"`
 }
