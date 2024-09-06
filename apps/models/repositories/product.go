@@ -37,7 +37,7 @@ func (r *productRepo) DeleteProduct(id string) error {
 
 func (r *productRepo) GetProductByID(id string) (*views.Product, error) {
 	var product views.Product
-	err := r.db.First(&product, id).Error
+	err := r.db.Where("id = ?", id).First(&product).Error
 	if err != nil {
 		return nil, err
 	}
