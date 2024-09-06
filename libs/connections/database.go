@@ -8,6 +8,7 @@ import (
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
 )
 
 type SetMySQL struct {
@@ -25,6 +26,7 @@ func (m *SetMySQL) SetMySQL() *gorm.DB {
 
 	database, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		PrepareStmt: true,
+		NamingStrategy: schema.NamingStrategy{SingularTable: true},
 	})
 	if err != nil {
 		log.Fatalf("Failed to connect to MySQL! err: %v", err)
