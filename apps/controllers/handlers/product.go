@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"errors"
 	"product-ms/apps/models/services"
 	"product-ms/apps/views"
 	"product-ms/libs/helpers"
@@ -25,6 +24,10 @@ func (h *Handler) CreateProduct(c *fiber.Ctx) error {
 
 	result, err := h.productService.CreateProduct(request)
 	if err != nil {
+		if err == helpers.ErrProductAlreadyExists {
+			return c.Status(fiber.StatusConflict).JSON(views.Status{Code: fiber.StatusConflict, Message: err.Error()})
+		}
+
 		return c.Status(fiber.StatusInternalServerError).JSON(views.Status{Code: fiber.StatusInternalServerError, Message: err.Error()})
 	}
 
@@ -41,7 +44,7 @@ func (h *Handler) UpdateProduct(c *fiber.Ctx) error {
 	result, err := h.productService.UpdateProductByID(id, request)
 	if err != nil {
 		var statusCode int
-		if errors.Is(err, &helpers.ProductNotFound{}) {
+		if err == helpers.ErrProductNotFound {
 			statusCode = fiber.StatusNotFound
 		} else {
 			statusCode = fiber.StatusInternalServerError
@@ -58,7 +61,7 @@ func (h *Handler) DeleteProduct(c *fiber.Ctx) error {
 	err := h.productService.DeleteProductByID(id)
 	if err != nil {
 		var statusCode int
-		if errors.Is(err, &helpers.ProductNotFound{}) {
+		if err == helpers.ErrProductNotFound {
 			statusCode = fiber.StatusNotFound
 		} else {
 			statusCode = fiber.StatusInternalServerError
@@ -75,7 +78,7 @@ func (h *Handler) GetProductByID(c *fiber.Ctx) error {
 	result, err := h.productService.GetProductByID(id)
 	if err != nil {
 		var statusCode int
-		if errors.Is(err, &helpers.ProductNotFound{}) {
+		if err == helpers.ErrProductNotFound {
 			statusCode = fiber.StatusNotFound
 		} else {
 			statusCode = fiber.StatusInternalServerError
