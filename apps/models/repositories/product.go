@@ -32,7 +32,7 @@ func (r *productRepo) UpdateProduct(id string, data views.UpdateProductRequest) 
 }
 
 func (r *productRepo) DeleteProduct(id string) error {
-	return r.db.Delete(&views.Product{}, id).Error
+	return r.db.Where("id = ?", id).Delete(&views.Product{}).Error
 }
 
 func (r *productRepo) GetProductByID(id string) (*views.Product, error) {
