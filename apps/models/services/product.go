@@ -27,8 +27,16 @@ func NewProductService(productRepo repositories.ProductRepo) ProductService {
 }
 
 func (s *productService) CreateProduct(req views.CreateProductRequest) (views.Product, error) {
-	timeNow := time.Now()
+	productExists, err := s.productRepo.GetProductByName(req.Name)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return views.Product{}, err
+    }
 
+	if productExists != nil {
+		return views.Product{}, helpers.ErrProductAlreadyExists
+	}
+	
+	timeNow := time.Now()
 	data := views.Product{
 		ID:          uuid.NewString(),
 		Name:        req.Name,
@@ -40,7 +48,7 @@ func (s *productService) CreateProduct(req views.CreateProductRequest) (views.Pr
 		CreatedAt:   &timeNow,
 	}
 
-	err := s.productRepo.InsertProduct(data)
+	err = s.productRepo.InsertProduct(data)
 	if err != nil {
 		return views.Product{}, err
 	}
@@ -52,7 +60,7 @@ func (s *productService) UpdateProductByID(id string, data views.UpdateProductRe
 	_, err := s.productRepo.GetProductByID(id)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return views.Product{}, &helpers.ProductNotFound{}
+			return views.Product{}, helpers.ErrProductNotFound
 		}
 
 		return views.Product{}, err
@@ -75,7 +83,7 @@ func (s *productService) DeleteProductByID(id string) error {
 	_, err := s.productRepo.GetProductByID(id)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return &helpers.ProductNotFound{}
+			return helpers.ErrProductNotFound
 		}
 
 		return err
@@ -88,7 +96,7 @@ func (s *productService) GetProductByID(id string) (views.Product, error) {
 	product, err := s.productRepo.GetProductByID(id)
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return views.Product{}, &helpers.ProductNotFound{}
+			return views.Product{}, helpers.ErrProductNotFound
 		}
 
 		return views.Product{}, err
