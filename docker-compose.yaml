@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: product-ms-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootPassword
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: adminPassword
+      MYSQL_DATABASE: product_management
+    ports:
+      - "23306:3306"
+    networks:
+      - network1
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+
+  go-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: product-ms
+    ports:
+      - "28080:8080"
+    networks:
+      - network1
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+networks: 
+  network1:
+    driver: bridge
+
+volumes:
+  mysql-data:
